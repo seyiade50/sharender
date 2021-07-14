@@ -1,0 +1,26 @@
+{
+  "name": "sharender",
+  "version": "1.0.0",
+  "description": "Sharender is a tiny, fast, simple, versatile, extensible and complete javascript template rendering engine you can use anywhere and build anything over.",
+  "main": "cjs.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seyiade50/sharender.git"
+  },
+  "keywords": [
+    "Javascript",
+    "js",
+    "template",
+    "rendering",
+    "engine"
+  ],
+  "author": "Shoboyejo Oluwaseyi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seyiade50/sharender/issues"
+  },
+  "homepage": "https://github.com/seyiade50/sharender#readme"
+}

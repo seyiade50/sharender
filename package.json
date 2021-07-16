@@ -1,6 +1,6 @@
 {
   "name": "sharender",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Sharender is a tiny, fast, simple, versatile, extensible and complete javascript template rendering engine you can use anywhere and build anything over.",
   "main": "cjs.js",
   "scripts": {

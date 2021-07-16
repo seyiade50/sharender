@@ -4,7 +4,7 @@ Sharender is a simple and powerful javascript template rendering library. It use
 
 ## Installation
 
-`npm install sharender`
+`npm install sharender.js`
 
 ## Usage
 

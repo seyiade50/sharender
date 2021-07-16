@@ -2,6 +2,12 @@
 
 Sharender is a simple and powerful javascript template rendering library. It uses simple js template literal syntax; so there is no template language to learn. There are no external dependencies; thus it is extremely compact and ready to use in the browser, a service worker or in erver environments like node. It contains all the features we know and love in template engines; namely includes, inheritance, streaming, async and auto-escape. You can easily use with other libraries, such as REACT, or you can build complex frameworks over it. In addition, you get IDE support for your templates free of charge.
 
+## Installation
+
+`npm install sharender`
+
+## Usage
+
 This is how sharender templates look in practice:
 
 ```html
@@ -29,20 +35,19 @@ This is how sharender templates look in practice:
 
 ```javascript
 // es6 import
-import sharender from 'sharender/es.js';
+import sharender from 'sharender/dist/es.js';
 const { render } = sharender;
 
 // commonjs/node require
-const sharender = require('sharender/cjs.js');
+const sharender = require('sharender/dist/cjs.js');
 const render = sharender.render;
 
-// iife function (include the script tag <script src="sharender/iife.js"></script>)
-const render = sharender().render
+// iife function (include the script tag <script src="sharender/dist/iife.js"></script>)
+const { render } = sharender();
 
 // jscode.js
 render('template.js', {post: {title: 'A Post', otherFields: '...'}, otherStuff: '...'});
 ```
-
 
 The above code contains all you need to learn about sharender:
 

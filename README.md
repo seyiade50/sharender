@@ -7,7 +7,7 @@ This is how sharender templates look in practice:
 ```html
 <!-- template.html -->
 <article>
-    <header>${hook(include('/header.html', raw))}</header>
+    <header>${hook(inc('/header.html', raw))}</header>
     ${ctx.post.picture? `
     <figure><img src="${url(ctx.post.picture)}" width="100%" height="30vh"></figure>
         `: ``}

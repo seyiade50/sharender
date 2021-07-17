@@ -4,8 +4,8 @@ const {num} = numModule;
 import valuepromiseModule from './valuepromise.js';
 const {ValuePromise} = valuepromiseModule;
 
-const defaultHolder = ((id) => `[[[[${id}}}}}`);
-const includeHolder = ((id) => ``);
+const defaultHolder = (id => `[[[[${id}}}}}`);
+const includeHolder = (id => `[[[[${id}}}}}`);
 
 /**
  * Now include code is fully isolated from render code!
@@ -13,13 +13,13 @@ const includeHolder = ((id) => ``);
  * (the template function receives the hook and this module exports the include function)
  * @param {*} template 
  * @param {*} context 
- * @param {*} error a string or object with toString() function
  */
 function include(template, context) {
-    const fn = (id, returnValue, value) => {
-        return render(template, context).then(t => {
+    let fn = (id, returnValue, value) => {
+        return new Promise((resolve, reject) => render(template, context).then(t => {
             value.value = value.value.replace(returnValue, t);
-        });
+            resolve(t);
+        }, reject));
     };
     fn.holder = includeHolder;
     return fn;
@@ -51,13 +51,14 @@ function lazy(template, context, holder) {
 }
 
 function render(template, context) {
-    const promises = [], functions = [];
+    if (context === undefined || context === null) context = {};
+    let promises = [], functions = [];
     let value = {toString() {return this.value;}};
     function hook(fn, holder) {
         if (!(fn instanceof Function)) return '';
-        const id = num();
-        const returnValue = (holder || fn.holder || defaultHolder)(id);
-        const result = fn(id, returnValue, value);
+        let id = num();
+        let returnValue = (holder || fn.holder || defaultHolder)(id);
+        let result = fn(id, returnValue, value);
         if (result instanceof Promise) promises.push(result);
         else if (result instanceof Function) functions.push(result);
         return returnValue;
@@ -65,12 +66,17 @@ function render(template, context) {
     
     let result = new ValuePromise((resolve, reject) => {
         renderAsync(template, context, hook, reject).then(t => {
+            // console.log(t);
             value.value = t;
-            Promise.all(promises).then(incs => {
+            Promise.allSettled(promises).then(incs => {
+                // console.log(value.value);
                 if (resolve) {
                     resolve(value.value);
                 }
                 for (let f of functions) f(incs);
+            }, err => {
+                console.log(err.toString());
+                if (reject) reject(err);
             })
         }, err => {
             console.log(err.toString());
@@ -106,13 +112,18 @@ render.fetch = {
         return render.fetch.fetch('json', url, init, reject);
     },
 };
+render.rawTemplates = true;
 render.args = 'ctx, raw, hook, inc, lazy, loop, blank, $';
 render.template = t => {
     return render.jsTemplate('(' + render.args + ') => `' + t + '`');
 }
 render.jsTemplate = (t) => { // returns a function suitable for use as a template given the function string
+    if (render.rawTemplates) t = unEscape(t);
     return (new Function('return ' + t + ';'))();
 };
+function unEscape(t) {
+    return t.replace(/\&amp;/g, '&').replace(/\&lt\;/g, '<').replace(/\&gt\;/g, '>').replace(/\&quot\;/g, '"').replace(/\&\#039\;/g, "'");
+}
 render.functions = {};
 
 const renderAsync = function(template, context, hook, reject) { // returns a promise that resolves to j-rendered output
@@ -134,9 +145,7 @@ const renderAsync = function(template, context, hook, reject) { // returns a pro
     }
     return Promise.all([templatePromise, contextPromise]).then(r => {
         let t = r[0], context = r[1];
-        // console.log(t);
-        return t(renderProxy(context), context, hook, include, lazy, loop, blank, render.functions);
-        // return t(context, context, hook, render.functions);
+        return t(renderProxy(context), context, hook, (t, c) => hook(include(t, c)), (t, c, h) => hook(lazy(t, c, h)), loop, blank, render.functions);
     }, reject)
 }
 function renderProxy(context) {
@@ -158,8 +167,7 @@ function renderEsc(t) {
 	return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 const loop = (arr, transform, sep) => {
-    // console.log(arr);
     return arr.map(transform).join(sep || '');
 }
 
-export default {render, include, lazy, blank, loop};
+export default { render };

@@ -1,6 +1,6 @@
 # About Sharender
 
-Sharender is a simple and powerful javascript template rendering library. It uses simple js template literal syntax; so there is no template language to learn. There are no external dependencies; thus it is extremely compact and ready to use in the browser, a service worker or in erver environments like node. It contains all the features we know and love in template engines; namely includes, inheritance, streaming, async and auto-escape. You can easily use with other libraries, such as REACT, or you can build complex frameworks over it. In addition, you get IDE support for your templates free of charge.
+Sharender is a pure, simple and powerful javascript template rendering library. It uses simple js template literal syntax; so there is no template language to learn. There are no external dependencies; thus it is extremely compact and ready to use in the browser, a service worker or in server environments like Node. It contains all the features we know and love in template engines; namely includes, inheritance, streaming, async and auto-escape. You can easily use with other libraries, such as REACT, or you can build complex frameworks over it. In addition, you get IDE support for your templates for free.
 
 ## Installation
 
@@ -13,7 +13,7 @@ This is how sharender templates look in practice:
 ```html
 <!-- template.html -->
 <article>
-    <header>${hook(inc('/header.html', raw))}</header>
+    <header>${inc('/header.html', raw)}</header>
     ${ctx.post.picture? `
     <figure><img src="${url(ctx.post.picture)}" width="100%" height="30vh"></figure>
         `: ``}
@@ -28,7 +28,7 @@ This is how sharender templates look in practice:
         `)}
     </ul>
     <footer>
-        ${hook(lazy('/footer.html', raw))}
+        ${lazy('/footer.html', raw)}
     </footer>
 </article>
 ```
@@ -43,7 +43,7 @@ const sharender = require('sharender/dist/cjs.js');
 const render = sharender.render;
 
 // iife function (include the script tag <script src="sharender/dist/iife.js"></script>)
-const { render } = sharender();
+const render = sharender.render;
 
 // jscode.js
 render('template.js', {post: {title: 'A Post', otherFields: '...'}, otherStuff: '...'});
@@ -83,12 +83,14 @@ The first argument to fn is a unique id generated for the specific invocation of
 
 The second argument is the result that is returned from the hook call. This is the initial (placeholder) value of the hook call that is present in the initial rendered output before any nested promises (those created inside the hook call) are resolved.
 
-The third argument is the promise eturned by render. This is actually a subclass of promise that has a value property which holds the rendered output at every point from the initial immediate/synchronous rendering up until the whole promise is resolved. The promise resolves to this value finally. Note that it is possible to modify the value as much as we likke between the time of initial immediate rendering and the time when the promise returned by render is finally resolved. This is precisely what `inc` (include) does.
+The third argument is the promise returned by render. This is actually a subclass of promise that has a value property which holds the rendered output at every point from the initial (immediate/synchronous) rendering up until the whole promise is resolved. The promise resolves to this value finally. Note that it is possible to modify the value as much as we like between the time of initial rendering and the time when the promise returned by render is finally resolved. This is precisely what `inc` (include) does.
 
-If fn returns a promise, the promise returned by render will not resolve until this promise is resolved. This is used to implement synchronous inclusions with the automatic `inc` function.
+If fn returns a promise, the promise returned by render will not resolve until this promise is resolved. This is used to implement _inline_ inclusions with the automatic `inc(template, context)` function.
 
-If the function returns a function instead, the returned function is invoked just before the promise returned by render resolves. This is used to implement async includes, AKA streaming, using the automatic `lazy` function.
+If the function returns a function instead, the returned function is invoked just before the promise returned by render resolves. This is used to implement _streaming_ includes, using the automatic `lazy(template, context, holder)` function.
 
-The holder function (optional second argument) is a function that takes the unique id generated for the hook call and returns any string that will be used as the result of the hook call (that is the text placed in the initial rendered output). For synchronous includes (using hook(inc(template, context))), this will usually be swapped out for the result of rendering the include before the render promise resolves. For aync includes using lazy, this will still be in the rendered output when the render promise is resolved...
+The holder function (optional second argument) is a function that takes the unique id generated for the hook call and returns any string that will be used as the result of the hook call (that is the text placed in the initial rendered output). For _inline_ includes (using inc(template, context)), this will usually be swapped out for the result of rendering the include before the render promise resolves. For _streaming_ includes (using lazy(template, context, holder)), this will still be in the rendered output when the render promise is resolved...
 
-Many other promise-related and async operations can also be implemented using the hook automatic function.
+Many other promise-related and async operations can also be implemented using the hook automatic function. See the examples.js file for more usage scenarios for the core features of the library.
+
+I would love great feedback and contributions on this project. If you have something to say or contribute, please feel free to reach out. You can make this a lot better than it already is. Cheers...

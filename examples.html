@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sharender examples</title>
+        <script src="./dist/iife.js"></script>
+    </head>
+    <body>
+        <header style="margin-bottom: 2em;">
+            <h1>This demonstrates many features of sharender</h1>
+            <p>Click a button to render the corresponding template</p>
+        </header>
+        <article id="t0">
+            <h2>Example for context interpolation</h2>
+            <div>ctx is ${ctx.str} and raw is ${raw.str}</div>
+        </article>
+        <button onclick="display('t0', ctx)">Render interpolation</button>
+        <hr>
+        <article id="t1">
+            <h2>Example for conditionals</h2>
+            ${(2>1)? `<div>Yes 2 is greater than 1</div>`: `<div>Na; 1 is greater than 2</div>`}
+        </article>
+        <button onclick="display('t1')">Render conditional</button>
+        <hr>
+        <article id="t2">
+            <h2>Example for loops</h2>
+            <ol><li>${loop(ctx.nums || [1, 2, 3, 4], num => `Number ${num}`)}</li></ol>
+        </article>
+        <button onclick="display('t2')">Render loop</button>
+        <hr>
+        <article id="t3">
+            <h2>Example for inline includes (inc)</h2>
+            ${inc(template('t2'), {nums: [1, 2, 3, 4, 5, 6, , 8, 9]})}
+        </article>
+        <button onclick="display('t3')">Render inline include (inc)</button>
+        <hr>
+        <article id="t4">
+            <h2>Example for streaming includes (lazy)</h2>
+            ${lazy(template('t2'), {nums: [1, 2, 3, 4, 5, 6, , 8, 9]}, hookId => `<span rid="${hookId}">Initial placeholdder (must set rid attr as shown)</span>`)}
+        </article>
+        <button onclick="display('t4')">Render streaming (lazy) include</button>
+        <hr>
+        <article id="t5">
+            <h2>Example for hooking anything (hook)</h2>
+
+        </article>
+        <button onclick="display('t5')">Render hooking</button>
+        <hr>
+        <article id="base">
+            <h2>Example for template inheritance</h2>
+            Base template content
+            ${raw.extendedBlock || `<mark>Block placeholder</mark>`}
+        </article>
+        <button onclick="display('base')">Render base</button>
+        <hr>
+        <article id="derived">
+            ${lazy(template('base'), {extendedBlock:`<strong>Block override</strong>`})}
+        </article>
+        <button onclick="display('derived')">Render derived</button>
+        <hr>
+        <main id="display">
+            <h2>Rendered templates display here</h2>
+            
+        </main>
+        <script>
+            let render, displayer;
+            const ctx = {str: `<mark>this is markup</mark>`};
+
+            function template(id) {
+                render = render || sharender.render;
+                return render.template('<div>' + document.getElementById(id).innerHTML + '</div><hr>');
+            }
+            
+            function display(id, ctx) {
+                // console.log(id);
+                render = render || sharender.render;
+                displayer = displayer || document.getElementById('display');
+                render(template(id), ctx).then(t => {
+                    // console.log(t);
+                    displayer.insertAdjacentHTML('beforeend', t);
+                }, err => console.error(err.toString()));
+            }
+
+        </script>
+    </body>
+</html>

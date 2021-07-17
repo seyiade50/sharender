@@ -91,6 +91,6 @@ If the function returns a function instead, the returned function is invoked jus
 
 The holder function (optional second argument) is a function that takes the unique id generated for the hook call and returns any string that will be used as the result of the hook call (that is the text placed in the initial rendered output). For _inline_ includes (using inc(template, context)), this will usually be swapped out for the result of rendering the include before the render promise resolves. For _streaming_ includes (using lazy(template, context, holder)), this will still be in the rendered output when the render promise is resolved...
 
-Many other promise-related and async operations can also be implemented using the hook automatic function. See the examples.js file for more usage scenarios of the core features of the library.
+Many other promise-related and async operations can also be implemented using the hook automatic function. See the examples.js file for more usage scenarios for the core features of the library.
 
 I would love great feedback and contributions on this project. If you have something to say or contribute, please feel free to reach out. You can make this a lot better than it already is. Cheers...
